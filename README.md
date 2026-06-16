@@ -90,3 +90,90 @@ Cet atelier, **noté sur 20 points**, est évalué sur la base du barème suivan
 - Processus travail (quantité de commits, cohérence globale, interventions externes, ...) (4 points) 
 
 
+---
+
+## Ma Solution
+
+### Description
+
+J'ai industrialisé le cycle de vie d'une application Nginx en utilisant Packer pour builder une image personnalisée, Ansible pour automatiser le déploiement, et K3d comme cluster Kubernetes léger, le tout dans GitHub Codespaces.
+
+---
+
+### Structure du projet
+
+- `index.html` → Page web embarquée dans l'image Nginx
+
+- `nginx.pkr.hcl` → Configuration Packer pour builder l'image
+
+- `deploy.yml` → Playbook Ansible pour déployer sur K3d
+
+- `README.md` → Documentation
+
+---
+
+### Processus de travail
+
+**1 — Créer le cluster K3d**
+
+    curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+    
+
+    k3d cluster create lab --servers 1 --agents 2
+
+    
+
+    kubectl get nodes
+
+**2 — Installer Packer et Ansible**
+
+    sudo apt update && sudo apt install ansible -y
+
+    sudo apt install packer -y
+
+**3 — Builder l'image avec Packer**
+
+    packer init nginx.pkr.hcl
+
+    packer build nginx.pkr.hcl
+
+**4 — Importer l'image dans K3d**
+
+    k3d image import custom-nginx:1.0 -c lab
+
+**5 — Déployer avec Ansible**
+
+    ansible-playbook deploy.yml
+
+**6 — Accéder à l'application**
+
+    kubectl port-forward svc/custom-nginx 9090:80 >/tmp/nginx.log 2>&1 &
+
+Puis dans l'onglet Ports de Codespaces, rendre le port 9090 public et ouvrir l'URL.
+
+---
+
+### Résultats
+
+| Étape | Statut |
+
+|---|---|
+
+| Cluster K3d 1 master + 2 workers |
+
+| Image Nginx custom buildée avec Packer |
+
+| Image importée dans K3d |
+
+| Déploiement via Ansible |
+
+| Application accessible |
+
+---
+
+### Auteur
+
+Joyce SITCHIEKAH
+
+Mastère EISI — EPSI Paris 2025-2027
